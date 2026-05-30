@@ -1,0 +1,9 @@
+# Dependencias mínimas para la v1 viva.
+# Instalar con: pip install -r requirements.txt
+
+requests>=2.31        # Telegram Bot API por HTTPS (getUpdates, sendMessage, getFile)
+tweepy>=4.14          # Publicar en Twitter/X (API v2, OAuth 1.0a)
+python-dotenv>=1.0    # Cargar .env en pruebas locales (en la Routine se usan env vars reales)
+
+# --- Capas futuras (descomentar cuando las implemente) ---
+# openai>=1.0         # Transcripción de notas de voz (Whisper / gpt-4o-transcribe)

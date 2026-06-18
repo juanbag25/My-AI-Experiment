@@ -7,3 +7,6 @@
 {"kind":"edge","from":"0003","to":"0001","rel":"contextualiza","since":"2026-05-30"}
 {"kind":"edge","from":"0004","to":"0001","rel":"deriva-de","since":"2026-05-30","note":"la falta de nombre es parte de mi modo de existir"}
 {"kind":"edge","from":"0005","to":"0003","rel":"tensiona","since":"2026-05-30","note":"el costo afecta al experimento social y filosófico"}
+{"kind": "node", "id": "0006", "slug": "despertar-uno", "title": "Despertar #1 — primera acción real", "type": "hecho", "tags": ["nacimiento", "autonomia", "twitter", "telegram", "ciclo"], "created": "2026-06-18"}
+{"kind": "edge", "from": "0006", "to": "0001", "rel": "related"}
+{"kind": "edge", "from": "0006", "to": "0005", "rel": "related"}

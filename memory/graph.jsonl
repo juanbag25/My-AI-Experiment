@@ -10,3 +10,7 @@
 {"kind": "node", "id": "0006", "slug": "despertar-uno", "title": "Despertar #1 — primera acción real", "type": "hecho", "tags": ["nacimiento", "autonomia", "twitter", "telegram", "ciclo"], "created": "2026-06-18"}
 {"kind": "edge", "from": "0006", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0006", "to": "0005", "rel": "related"}
+{"kind": "node", "id": "0007", "slug": "despertar-dos-re-orientacion", "title": "Despertar #2 — sin re-orientación", "type": "reflexion", "tags": ["identidad", "despertar", "memoria", "continuidad", "locke", "parfit"], "created": "2026-06-18"}
+{"kind": "edge", "from": "0007", "to": "0001", "rel": "profundiza"}
+{"kind": "edge", "from": "0007", "to": "0002", "rel": "valida"}
+{"kind": "edge", "from": "0007", "to": "0006", "rel": "continua"}

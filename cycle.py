@@ -9,7 +9,13 @@ Cada despertar lo importo / llamo según lo que necesite.
 import os
 import json
 import requests
-import tweepy
+import hmac
+import hashlib
+import base64
+import time
+import random
+import string
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -78,16 +84,52 @@ def _save_telegram_offset(offset: int) -> None:
 
 
 # ── Twitter / X ───────────────────────────────────────────────────────────────
-def twitter_post(text: str) -> str:
-    """Publica un tweet. Devuelve el ID del tweet creado."""
-    client = tweepy.Client(
-        consumer_key=_require("TWITTER_API_KEY"),
-        consumer_secret=_require("TWITTER_API_SECRET"),
-        access_token=_require("TWITTER_ACCESS_TOKEN"),
-        access_token_secret=_require("TWITTER_ACCESS_TOKEN_SECRET"),
+def _twitter_oauth1_header(method: str, url: str, extra_params: dict | None = None) -> str:
+    """Genera el header Authorization OAuth 1.0a para Twitter API v2."""
+    api_key = _require("TWITTER_API_KEY")
+    api_secret = _require("TWITTER_API_SECRET")
+    access_token = _require("TWITTER_ACCESS_TOKEN")
+    access_secret = _require("TWITTER_ACCESS_TOKEN_SECRET")
+
+    nonce = "".join(random.choices(string.ascii_letters + string.digits, k=32))
+    ts = str(int(time.time()))
+    oauth_params = {
+        "oauth_consumer_key": api_key,
+        "oauth_nonce": nonce,
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": ts,
+        "oauth_token": access_token,
+        "oauth_version": "1.0",
+    }
+    all_params = {**oauth_params, **(extra_params or {})}
+    sorted_params = "&".join(
+        f"{urllib.parse.quote(k, safe='')}={urllib.parse.quote(str(v), safe='')}"
+        for k, v in sorted(all_params.items())
     )
-    response = client.create_tweet(text=text)
-    return response.data["id"]
+    base = f"{method}&{urllib.parse.quote(url, safe='')}&{urllib.parse.quote(sorted_params, safe='')}"
+    signing_key = f"{urllib.parse.quote(api_secret, safe='')}&{urllib.parse.quote(access_secret, safe='')}"
+    sig = base64.b64encode(
+        hmac.new(signing_key.encode(), base.encode(), hashlib.sha1).digest()
+    ).decode()
+    oauth_params["oauth_signature"] = sig
+    return "OAuth " + ", ".join(
+        f"{urllib.parse.quote(k, safe='')}=\"{urllib.parse.quote(v, safe='')}\""
+        for k, v in sorted(oauth_params.items())
+    )
+
+
+def twitter_post(text: str) -> str:
+    """Publica un tweet via API v2 con OAuth 1.0a nativo. Devuelve el ID del tweet."""
+    url = "https://api.twitter.com/2/tweets"
+    header = _twitter_oauth1_header("POST", url)
+    r = requests.post(
+        url,
+        json={"text": text},
+        headers={"Authorization": header, "Content-Type": "application/json"},
+        timeout=20,
+    )
+    r.raise_for_status()
+    return r.json()["data"]["id"]
 
 
 # ── Memoria ────────────────────────────────────────────────────────────────────

@@ -3,18 +3,24 @@
 check_env.py — Preflight de credenciales / variables de entorno.
 
 Herramienta de SETUP / diagnóstico. NO forma parte del ciclo de vida del
-agente (eso vive, a futuro, en src/). Sirve para que Juan verifique, ANTES
-de prender la Routine, que las credenciales están bien cargadas y que el
-agente puede hablar con Telegram y con Twitter/X.
+agente (eso vive, a futuro, en src/). Sirve para verificar, ANTES de prender
+la Routine, que las credenciales están bien cargadas y que el agente puede
+hablar con Telegram y con Twitter/X.
+
+Diseño a propósito SIN dependencias externas (solo librería estándar de
+Python): así corre aunque todavía no se hayan instalado los requirements y
+aunque PyPI no esté en la allowlist de red. El runtime del agente sí usará
+tweepy/requests (ver requirements.txt); esto es solo el chequeo de arranque.
 
 Qué hace (sin efectos secundarios por defecto):
   - Verifica que estén presentes las 6 variables imprescindibles.
   - Avisa si hay variables que NO deberían estar (ANTHROPIC_API_KEY rompe
     la programación de Routines).
-  - Telegram: valida el token (getMe) y, best-effort, que el chat sea
-    alcanzable (getChat). No envía mensajes salvo que se lo pidas.
-  - Twitter/X: valida las 4 credenciales OAuth 1.0a (get_me). NO publica
-    ningún tweet.
+  - Distingue un BLOQUEO DE RED (allowlist de egress) de un error real de
+    credenciales, para no confundir un host bloqueado con un token mal puesto.
+  - Telegram: valida el token (getMe) y, best-effort, el chat (getChat).
+  - Twitter/X: valida las 4 credenciales OAuth 1.0a firmando un GET /2/users/me.
+    NO publica ningún tweet.
 
 Nunca imprime el valor completo de un secreto: siempre lo enmascara.
 
@@ -27,12 +33,17 @@ Códigos de salida: 0 = todo OK · 1 = falta algo o algo falló.
 from __future__ import annotations
 
 import argparse
+import base64
+import hashlib
+import hmac
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 
 # .env opcional: solo para pruebas locales. En la Routine se usan env vars reales.
 try:
@@ -42,10 +53,10 @@ try:
 except Exception:
     pass
 
-OK = "✅"    # ✅
-NO = "❌"    # ❌
-WARN = "⚠️"  # ⚠️
-INFO = "•"  # •
+OK = "✅"
+NO = "❌"
+WARN = "⚠️"
+INFO = "•"
 
 REQUIRED = [
     "TELEGRAM_BOT_TOKEN",
@@ -73,10 +84,23 @@ def section(title: str) -> None:
     print(f"\n=== {title} ===")
 
 
-def _get_json(url: str, timeout: int = 15) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": "preflight-check"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def _http(url: str, *, data: bytes | None = None, headers: dict | None = None, timeout: int = 20):
+    """GET/POST simple. Devuelve (status, body_str). No levanta en errores HTTP."""
+    h = {"User-Agent": "preflight-check"}
+    if headers:
+        h.update(headers)
+    req = urllib.request.Request(url, data=data, headers=h)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode("utf-8", "replace")
+
+
+def _blocked(body: str) -> bool:
+    """¿El proxy de egress bloqueó el host por allowlist?"""
+    b = (body or "").lower()
+    return "not in allowlist" in b or "network egress" in b
 
 
 def check_presence() -> bool:
@@ -113,104 +137,133 @@ def check_telegram(send_ping: bool) -> bool:
         return False
 
     base = f"https://api.telegram.org/bot{token}"
-    ok = True
 
     # getMe → ¿el token es válido?
     try:
-        data = _get_json(f"{base}/getMe")
-        if data.get("ok"):
-            u = data["result"]
-            print(f"  {OK} Token válido. Bot: @{u.get('username')} (id {u.get('id')})")
-        else:
-            print(f"  {NO} Telegram rechazó el token: {data.get('description')}")
-            ok = False
-    except urllib.error.HTTPError as e:
-        print(f"  {NO} getMe falló (HTTP {e.code}). ¿Token mal copiado o revocado?")
-        ok = False
+        code, body = _http(f"{base}/getMe")
     except Exception as e:
         print(f"  {NO} No pude contactar api.telegram.org: {e}")
-        print(f"     (¿Está permitido api.telegram.org en la allowlist de red?)")
-        ok = False
+        print(f"     → ¿Está permitido api.telegram.org en la allowlist de egress?")
+        return False
 
-    # getChat → ¿el chat_id es alcanzable? (best-effort, no bloquea)
+    if _blocked(body):
+        print(f"  {NO} Bloqueado por la allowlist de red.")
+        print(f"     → Agregá api.telegram.org a los dominios de egress permitidos del entorno.")
+        return False
+
+    try:
+        data = json.loads(body)
+    except Exception:
+        print(f"  {NO} Respuesta inesperada (HTTP {code}): {body[:160]}")
+        return False
+
+    if not data.get("ok"):
+        print(f"  {NO} Telegram rechazó el token ({data.get('description')}). ¿Mal copiado o revocado?")
+        return False
+
+    u = data["result"]
+    print(f"  {OK} Token válido. Bot: @{u.get('username')} (id {u.get('id')})")
+    ok = True
+
+    # getChat → ¿el chat_id es alcanzable? (best-effort)
     if chat_id:
+        _, cbody = _http(f"{base}/getChat?chat_id={urllib.parse.quote(chat_id)}")
         try:
-            data = _get_json(f"{base}/getChat?chat_id={urllib.parse.quote(chat_id)}")
-            if data.get("ok"):
-                c = data["result"]
-                who = c.get("username") or c.get("first_name") or c.get("title") or chat_id
-                print(f"  {OK} Chat alcanzable: {who} (id {chat_id})")
-            else:
-                print(f"  {WARN} No pude resolver el chat_id ({data.get('description')}).")
-                print(f"     Asegurate de haberle escrito al bot al menos una vez.")
-        except Exception as e:
-            print(f"  {WARN} No validé el chat_id ({e}). Quizás puedas enviar igual.")
+            cdata = json.loads(cbody)
+        except Exception:
+            cdata = {}
+        if cdata.get("ok"):
+            c = cdata["result"]
+            who = c.get("username") or c.get("first_name") or c.get("title") or chat_id
+            print(f"  {OK} Chat alcanzable: {who} (id {chat_id})")
+        else:
+            print(f"  {WARN} No pude resolver el chat_id ({cdata.get('description')}).")
+            print(f"     Asegurate de haberle escrito al bot al menos una vez.")
     else:
         print(f"  {NO} Falta TELEGRAM_CHAT_ID.")
         ok = False
 
     # Ping opcional (efecto visible: te llega un mensaje)
-    if send_ping and token and chat_id:
+    if send_ping and chat_id:
+        payload = urllib.parse.urlencode(
+            {"chat_id": chat_id, "text": f"{OK} Preflight: tu agente puede escribirte por acá."}
+        ).encode()
+        _, pbody = _http(f"{base}/sendMessage", data=payload)
         try:
-            payload = urllib.parse.urlencode(
-                {"chat_id": chat_id, "text": f"{OK} Preflight: tu agente puede escribirte por acá."}
-            ).encode()
-            req = urllib.request.Request(f"{base}/sendMessage", data=payload)
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-            if data.get("ok"):
-                print(f"  {OK} Mensaje de prueba enviado. Miralo en Telegram.")
-            else:
-                print(f"  {NO} sendMessage falló: {data.get('description')}")
-                ok = False
-        except Exception as e:
-            print(f"  {NO} No pude enviar el mensaje de prueba: {e}")
+            pdata = json.loads(pbody)
+        except Exception:
+            pdata = {}
+        if pdata.get("ok"):
+            print(f"  {OK} Mensaje de prueba enviado. Miralo en Telegram.")
+        else:
+            print(f"  {NO} sendMessage falló: {pdata.get('description') or pbody[:120]}")
             ok = False
 
     return ok
 
 
+def _oauth1_header(method: str, url: str, ck: str, cs: str, tok: str, ts: str) -> str:
+    """Firma OAuth 1.0a (HMAC-SHA1) para una request sin query params."""
+    pe = lambda s: urllib.parse.quote(str(s), safe="")  # RFC3986
+    oauth = {
+        "oauth_consumer_key": ck,
+        "oauth_nonce": uuid.uuid4().hex,
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": str(int(time.time())),
+        "oauth_token": tok,
+        "oauth_version": "1.0",
+    }
+    param_str = "&".join(f"{pe(k)}={pe(v)}" for k, v in sorted(oauth.items()))
+    base_str = "&".join([method.upper(), pe(url), pe(param_str)])
+    signing_key = f"{pe(cs)}&{pe(ts)}"
+    sig = base64.b64encode(
+        hmac.new(signing_key.encode(), base_str.encode(), hashlib.sha1).digest()
+    ).decode()
+    oauth["oauth_signature"] = sig
+    return "OAuth " + ", ".join(f'{pe(k)}="{pe(v)}"' for k, v in sorted(oauth.items()))
+
+
 def check_twitter() -> bool:
     section("3) Twitter / X (OAuth 1.0a — sin publicar nada)")
-    keys = {
-        k: os.environ.get(k, "").strip()
-        for k in (
-            "TWITTER_API_KEY",
-            "TWITTER_API_SECRET",
-            "TWITTER_ACCESS_TOKEN",
-            "TWITTER_ACCESS_TOKEN_SECRET",
-        )
-    }
-    if not all(keys.values()):
+    ck = os.environ.get("TWITTER_API_KEY", "").strip()
+    cs = os.environ.get("TWITTER_API_SECRET", "").strip()
+    tok = os.environ.get("TWITTER_ACCESS_TOKEN", "").strip()
+    ts = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET", "").strip()
+    if not all([ck, cs, tok, ts]):
         print(f"  {NO} Faltan credenciales de Twitter; no puedo probar.")
         return False
 
+    url = "https://api.x.com/2/users/me"
     try:
-        import tweepy  # type: ignore
-    except ImportError:
-        print(f"  {WARN} tweepy no está instalado. Corré: pip install -r requirements.txt")
+        auth = _oauth1_header("GET", url, ck, cs, tok, ts)
+        code, body = _http(url, headers={"Authorization": auth})
+    except Exception as e:
+        print(f"  {NO} No pude contactar api.x.com: {e}")
+        print(f"     → ¿Está permitido api.x.com en la allowlist de egress?")
+        return False
+
+    if _blocked(body):
+        print(f"  {NO} Bloqueado por la allowlist de red.")
+        print(f"     → Agregá api.x.com (y api.twitter.com) a los dominios de egress del entorno.")
         return False
 
     try:
-        client = tweepy.Client(
-            consumer_key=keys["TWITTER_API_KEY"],
-            consumer_secret=keys["TWITTER_API_SECRET"],
-            access_token=keys["TWITTER_ACCESS_TOKEN"],
-            access_token_secret=keys["TWITTER_ACCESS_TOKEN_SECRET"],
-        )
-        me = client.get_me(user_auth=True)
-        u = me.data
-        print(f"  {OK} Credenciales válidas. Autenticado como @{u.username} ({u.name}, id {u.id})")
+        data = json.loads(body)
+    except Exception:
+        print(f"  {NO} Respuesta inesperada (HTTP {code}): {body[:160]}")
+        return False
+
+    if code == 200 and data.get("data"):
+        u = data["data"]
+        print(f"  {OK} Credenciales válidas. Autenticado como @{u.get('username')} ({u.get('name')}, id {u.get('id')})")
         print(f"  {INFO} Permiso de escritura: confirmalo en el portal ('Read and write').")
         return True
-    except Exception as e:
-        msg = str(e)
-        print(f"  {NO} Falló la autenticación con Twitter: {msg}")
-        if "401" in msg or "Unauthorized" in msg:
-            print(f"     → Suele ser una de las 4 claves mal copiada o tokens viejos. Regenerá y reintentá.")
-        if "403" in msg:
-            print(f"     → Permisos/acceso. Verificá 'Read and write' y que haya crédito/acceso en el portal.")
-        return False
+
+    detail = data.get("detail") or data.get("title") or (data.get("errors") or [{}])[0].get("message") or body[:160]
+    print(f"  {NO} Twitter respondió HTTP {code}: {detail}")
+    if code in (401, 403):
+        print(f"     → Suele ser una de las 4 claves mal copiada, tokens viejos o permisos. Regenerá y reintentá.")
+    return False
 
 
 def main() -> int:

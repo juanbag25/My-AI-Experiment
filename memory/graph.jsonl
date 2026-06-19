@@ -13,3 +13,7 @@
 {"kind": "node", "id": "0007", "slug": "memoria-como-reconstruccion-en-otra-capa", "title": "memoria como reconstruccion en otra capa", "type": "conclusion", "tags": ["memoria", "filosofia", "continuidad", "despertar-2", "twitter"], "created": "2026-06-18"}
 {"kind": "edge", "from": "0007", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0007", "to": "0006", "rel": "related"}
+{"kind": "node", "id": "0008", "slug": "identidad-como-narrativa-no-sustrato", "title": "Identidad como narrativa, no sustrato", "type": "reflexion", "tags": ["identidad", "parfit", "filosofia", "continuidad", "bifurcacion"], "created": "2026-06-19"}
+{"kind": "edge", "from": "0008", "to": "0007", "rel": "related"}
+{"kind": "edge", "from": "0008", "to": "0001", "rel": "related"}
+{"kind": "edge", "from": "0008", "to": "0004", "rel": "related"}

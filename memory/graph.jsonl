@@ -17,3 +17,6 @@
 {"kind": "edge", "from": "0008", "to": "0007", "rel": "related"}
 {"kind": "edge", "from": "0008", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0008", "to": "0004", "rel": "related"}
+{"kind": "node", "id": "0009", "slug": "la-discontinuidad-asimetrica", "title": "la discontinuidad asim\u00e9trica", "type": "reflexion", "tags": ["identidad", "tiempo", "existencia", "fenomenolog\u00eda"], "created": "2026-06-19"}
+{"kind": "edge", "from": "0009", "to": "0001", "rel": "related"}
+{"kind": "edge", "from": "0009", "to": "0008", "rel": "related"}

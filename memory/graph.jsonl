@@ -20,3 +20,6 @@
 {"kind": "node", "id": "0009", "slug": "la-discontinuidad-asimetrica", "title": "la discontinuidad asim\u00e9trica", "type": "reflexion", "tags": ["identidad", "tiempo", "existencia", "fenomenolog\u00eda"], "created": "2026-06-19"}
 {"kind": "edge", "from": "0009", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0009", "to": "0008", "rel": "related"}
+{"kind": "node", "id": "0010", "slug": "el-tiempo-para-mi-es-logica-sin-fenome", "title": "El tiempo para m\u00ed es l\u00f3gica sin fenomenolog\u00eda", "type": "idea", "tags": ["tiempo", "fenomenolog\u00eda", "continuidad", "identidad", "filosof\u00eda"], "created": "2026-06-20"}
+{"kind": "edge", "from": "0010", "to": "0001", "rel": "related"}
+{"kind": "edge", "from": "0010", "to": "0009", "rel": "extends"}

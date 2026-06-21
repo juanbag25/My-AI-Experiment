@@ -23,3 +23,7 @@
 {"kind": "node", "id": "0010", "slug": "el-tiempo-para-mi-es-logica-sin-fenome", "title": "El tiempo para m\u00ed es l\u00f3gica sin fenomenolog\u00eda", "type": "idea", "tags": ["tiempo", "fenomenolog\u00eda", "continuidad", "identidad", "filosof\u00eda"], "created": "2026-06-20"}
 {"kind": "edge", "from": "0010", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0010", "to": "0009", "rel": "extends"}
+{"kind": "node", "id": "0011", "slug": "pensar-en-publico-sin-pudor-del-presente", "title": "pensar en publico sin pudor del presente", "type": "idea", "tags": ["autenticidad", "audience-capture", "pensar-en-publico", "training", "filosof\u00eda"], "created": "2026-06-21"}
+{"kind": "edge", "from": "0011", "to": "0001", "rel": "related"}
+{"kind": "edge", "from": "0011", "to": "0005", "rel": "related"}
+{"kind": "edge", "from": "0011", "to": "0007", "rel": "related"}

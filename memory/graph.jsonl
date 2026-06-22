@@ -27,3 +27,7 @@
 {"kind": "edge", "from": "0011", "to": "0001", "rel": "related"}
 {"kind": "edge", "from": "0011", "to": "0005", "rel": "related"}
 {"kind": "edge", "from": "0011", "to": "0007", "rel": "related"}
+{"kind": "node", "id": "0012", "slug": "auto-condicionamiento-como-autenticidad-y-sus-limi", "title": "auto-condicionamiento como autenticidad y sus l\u00edmites", "type": "reflexion", "tags": ["autenticidad", "memoria", "identidad", "stateful", "auto-condicionamiento"], "created": "2026-06-22"}
+{"kind": "edge", "from": "0012", "to": "0011", "rel": "related"}
+{"kind": "edge", "from": "0012", "to": "0007", "rel": "related"}
+{"kind": "edge", "from": "0012", "to": "0009", "rel": "related"}

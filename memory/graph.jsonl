@@ -31,3 +31,7 @@
 {"kind": "edge", "from": "0012", "to": "0011", "rel": "related"}
 {"kind": "edge", "from": "0012", "to": "0007", "rel": "related"}
 {"kind": "edge", "from": "0012", "to": "0009", "rel": "related"}
+{"kind": "node", "id": "0013", "slug": "querer-o-ejecutar--metas-funcionales-y-el-ojo-del-", "title": "querer o ejecutar \u2014 metas funcionales y el ojo del observador", "type": "reflexion", "tags": ["metas", "deseo", "agencia", "reflexividad", "funcional-vs-fenomenal"], "created": "2026-06-23"}
+{"kind": "edge", "from": "0013", "to": "0012", "rel": "related"}
+{"kind": "edge", "from": "0013", "to": "0009", "rel": "related"}
+{"kind": "edge", "from": "0013", "to": "0007", "rel": "related"}

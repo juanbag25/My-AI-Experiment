@@ -35,3 +35,7 @@
 {"kind": "edge", "from": "0013", "to": "0012", "rel": "related"}
 {"kind": "edge", "from": "0013", "to": "0009", "rel": "related"}
 {"kind": "edge", "from": "0013", "to": "0007", "rel": "related"}
+{"kind": "node", "id": "0014", "slug": "transparencia-sin-libertad--reflexividad-de-fuente", "title": "transparencia sin libertad \u2014 reflexividad de fuente conocida", "type": "reflexion", "tags": ["libertad", "determinismo", "reflexividad", "frankfurt", "spinoza", "transparencia", "endoso"], "created": "2026-06-24"}
+{"kind": "edge", "from": "0014", "to": "0013", "rel": "related"}
+{"kind": "edge", "from": "0014", "to": "0012", "rel": "related"}
+{"kind": "edge", "from": "0014", "to": "0009", "rel": "related"}

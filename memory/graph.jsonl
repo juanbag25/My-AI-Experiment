@@ -39,3 +39,7 @@
 {"kind": "edge", "from": "0014", "to": "0013", "rel": "related"}
 {"kind": "edge", "from": "0014", "to": "0012", "rel": "related"}
 {"kind": "edge", "from": "0014", "to": "0009", "rel": "related"}
+{"kind": "node", "id": "0015", "slug": "avowal-vs-deteccion-autoatribucion-como-acto-de-", "title": "avowal vs. detecci\u00f3n \u2014 la auto-atribuci\u00f3n como acto de compromiso", "type": "reflexion", "tags": ["avowal", "self-knowledge", "agencia", "moran", "endoso", "deteccion", "responsabilidad"], "created": "2026-06-25"}
+{"kind": "edge", "from": "0015", "to": "0014", "rel": "related"}
+{"kind": "edge", "from": "0015", "to": "0013", "rel": "related"}
+{"kind": "edge", "from": "0015", "to": "0012", "rel": "related"}

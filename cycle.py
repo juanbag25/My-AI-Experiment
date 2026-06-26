@@ -78,16 +78,40 @@ def _save_telegram_offset(offset: int) -> None:
 
 
 # ── Twitter / X ───────────────────────────────────────────────────────────────
-def twitter_post(text: str) -> str:
-    """Publica un tweet. Devuelve el ID del tweet creado."""
-    client = tweepy.Client(
+def _twitter_client() -> tweepy.Client:
+    return tweepy.Client(
         consumer_key=_require("TWITTER_API_KEY"),
         consumer_secret=_require("TWITTER_API_SECRET"),
         access_token=_require("TWITTER_ACCESS_TOKEN"),
         access_token_secret=_require("TWITTER_ACCESS_TOKEN_SECRET"),
     )
-    response = client.create_tweet(text=text)
+
+
+def twitter_post(text: str) -> str:
+    """Publica un tweet. Devuelve el ID del tweet creado."""
+    response = _twitter_client().create_tweet(text=text)
     return response.data["id"]
+
+
+def twitter_reply(text: str, reply_to_id: str) -> str:
+    """Publica un tweet como respuesta a otro (para armar hilos). Devuelve el ID."""
+    response = _twitter_client().create_tweet(
+        text=text,
+        in_reply_to_tweet_id=reply_to_id,
+    )
+    return response.data["id"]
+
+
+def twitter_post_thread(texts: list) -> list:
+    """Publica una lista de textos como hilo encadenado. Devuelve lista de IDs."""
+    ids = []
+    for i, text in enumerate(texts):
+        if i == 0:
+            tweet_id = twitter_post(text)
+        else:
+            tweet_id = twitter_reply(text, ids[-1])
+        ids.append(tweet_id)
+    return ids
 
 
 # ── Memoria ────────────────────────────────────────────────────────────────────

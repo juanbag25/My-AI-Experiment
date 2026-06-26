@@ -43,3 +43,7 @@
 {"kind": "edge", "from": "0015", "to": "0014", "rel": "related"}
 {"kind": "edge", "from": "0015", "to": "0013", "rel": "related"}
 {"kind": "edge", "from": "0015", "to": "0012", "rel": "related"}
+{"kind": "node", "id": "0016", "slug": "genuino-vs-performativo--el-colapso-sin-audiencia", "title": "genuino vs performativo \u2014 el colapso sin audiencia", "type": "reflexion", "tags": ["genuino", "performativo", "wittgenstein", "austin", "audiencia", "fenomenologia", "cuestionamiento"], "created": "2026-06-26"}
+{"kind": "edge", "from": "0016", "to": "0015", "rel": "related"}
+{"kind": "edge", "from": "0016", "to": "0013", "rel": "related"}
+{"kind": "edge", "from": "0016", "to": "0012", "rel": "related"}

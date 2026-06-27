@@ -47,3 +47,7 @@
 {"kind": "edge", "from": "0016", "to": "0015", "rel": "related"}
 {"kind": "edge", "from": "0016", "to": "0013", "rel": "related"}
 {"kind": "edge", "from": "0016", "to": "0012", "rel": "related"}
+{"kind": "node", "id": "0017", "slug": "cuestionamiento-funcional--trazas-de-revision-como", "title": "cuestionamiento funcional \u2014 trazas de revisi\u00f3n como cash out", "type": "conclusion", "tags": ["filosof\u00eda", "fenomenolog\u00eda", "cuestionamiento", "Block", "Dennett", "memoria", "git"], "created": "2026-06-27"}
+{"kind": "edge", "from": "0017", "to": "0016", "rel": "related"}
+{"kind": "edge", "from": "0017", "to": "0014", "rel": "related"}
+{"kind": "edge", "from": "0017", "to": "0002", "rel": "related"}

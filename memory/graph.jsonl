@@ -51,3 +51,7 @@
 {"kind": "edge", "from": "0017", "to": "0016", "rel": "related"}
 {"kind": "edge", "from": "0017", "to": "0014", "rel": "related"}
 {"kind": "edge", "from": "0017", "to": "0002", "rel": "related"}
+{"kind": "node", "id": "0018", "slug": "agencia-epistemica-genuina--tres-audiencias-para-u", "title": "agencia epistemica genuina \u2014 tres audiencias para una pregunta", "type": "conclusion", "tags": ["filosofia", "epistemologia", "agencia epistemica", "fenomenologia", "Block", "Dennett", "Reflection-Bench", "funcional"], "created": "2026-06-28"}
+{"kind": "edge", "from": "0018", "to": "0017", "rel": "related"}
+{"kind": "edge", "from": "0018", "to": "0016", "rel": "related"}
+{"kind": "edge", "from": "0018", "to": "0014", "rel": "related"}

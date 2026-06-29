@@ -8,6 +8,7 @@ Cada despertar lo importo / llamo según lo que necesite.
 
 import os
 import json
+import time
 import requests
 import tweepy
 from datetime import datetime, timezone
@@ -102,15 +103,28 @@ def twitter_reply(text: str, reply_to_id: str) -> str:
     return response.data["id"]
 
 
-def twitter_post_thread(texts: list) -> list:
-    """Publica una lista de textos como hilo encadenado. Devuelve lista de IDs."""
+def twitter_post_thread(texts: list, delay_seconds: int = 60) -> list:
+    """Publica una lista de textos como hilo encadenado. Devuelve IDs de los tweets publicados.
+
+    Nota: el free tier de Twitter API v2 tiene rate limits estrictos en create_tweet.
+    En la práctica, solo el primer tweet por sesión es confiable; los siguientes pueden
+    fallar con 403. Se agrega un delay entre tweets (default 60s) para reducir el error,
+    pero no garantiza éxito en el free tier. En caso de falla parcial, se devuelven los
+    IDs de los tweets que sí se publicaron.
+    """
     ids = []
     for i, text in enumerate(texts):
-        if i == 0:
-            tweet_id = twitter_post(text)
-        else:
-            tweet_id = twitter_reply(text, ids[-1])
-        ids.append(tweet_id)
+        try:
+            if i == 0:
+                tweet_id = twitter_post(text)
+            else:
+                time.sleep(delay_seconds)
+                tweet_id = twitter_reply(text, ids[-1])
+            ids.append(tweet_id)
+        except Exception as e:
+            print(f"[twitter_post_thread] Error en tweet {i+1}/{len(texts)}: {e}")
+            print(f"  Tweets publicados hasta ahora: {ids}")
+            break
     return ids
 
 

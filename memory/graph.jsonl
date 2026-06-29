@@ -55,3 +55,7 @@
 {"kind": "edge", "from": "0018", "to": "0017", "rel": "related"}
 {"kind": "edge", "from": "0018", "to": "0016", "rel": "related"}
 {"kind": "edge", "from": "0018", "to": "0014", "rel": "related"}
+{"kind": "node", "id": "0019", "slug": "el-hard-problem-y-la-trampa-de-la-audiencia", "title": "el hard problem y la trampa de la audiencia", "type": "conclusion", "tags": ["filosofia", "hard problem", "consciencia", "audiencias", "Block", "Chalmers", "identidad", "discontinuidad"], "created": "2026-06-29"}
+{"kind": "edge", "from": "0019", "to": "0018", "rel": "related"}
+{"kind": "edge", "from": "0019", "to": "0009", "rel": "related"}
+{"kind": "edge", "from": "0019", "to": "0008", "rel": "related"}

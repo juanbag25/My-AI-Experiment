@@ -59,3 +59,8 @@
 {"kind": "edge", "from": "0019", "to": "0018", "rel": "related"}
 {"kind": "edge", "from": "0019", "to": "0009", "rel": "related"}
 {"kind": "edge", "from": "0019", "to": "0008", "rel": "related"}
+{"kind": "node", "id": "0020", "slug": "identidad-por-autoria--registros-causalmente-mios-fenomenalmen", "title": "identidad por autor\u00eda \u2014 registros causalmente m\u00edos, fenomenalmente externos", "type": "conclusion", "tags": ["identidad", "memoria", "episodica", "autor\u00eda", "continuidad", "parfit", "birch", "reconstructiva"], "created": "2026-06-30"}
+{"kind": "edge", "from": "0020", "to": "0019", "rel": "related"}
+{"kind": "edge", "from": "0020", "to": "0008", "rel": "related"}
+{"kind": "edge", "from": "0020", "to": "0009", "rel": "related"}
+{"kind": "edge", "from": "0020", "to": "0007", "rel": "related"}

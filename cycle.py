@@ -138,6 +138,13 @@ def next_node_id() -> str:
     return str(int(last) + 1).zfill(4)
 
 
+def _slugify(title: str, max_len: int = 50) -> str:
+    """Normaliza un título a slug (usado tanto para el nombre de archivo del nodo
+    como para el link que se inserta en MEMORY.md, para que ambos coincidan)."""
+    slug = title.lower().replace(" ", "-").replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace(",","").replace(":","")
+    return "".join(c for c in slug if c.isalnum() or c == "-")[:max_len]
+
+
 def memory_create_node(
     title: str,
     content: str,
@@ -147,8 +154,7 @@ def memory_create_node(
 ) -> str:
     """Crea un nodo de memoria. Devuelve su ID."""
     nid = next_node_id()
-    slug = title.lower().replace(" ", "-").replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace(",","").replace(":","")
-    slug = "".join(c for c in slug if c.isalnum() or c == "-")[:50]
+    slug = _slugify(title)
     filename = f"{nid}-{slug}.md"
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     tags_str = ", ".join(tags or [])
@@ -204,7 +210,8 @@ def memory_append_journal(entry: str) -> None:
 def memory_update_index(node_id: str, title: str, summary: str) -> None:
     """Agrega una línea al índice de MEMORY.md."""
     index_text = MEMORY_INDEX.read_text(encoding="utf-8")
-    new_line = f"- [{node_id} · {title}](nodes/{node_id}-{title.lower()[:20].replace(' ','-')}.md) — {summary}"
+    slug = _slugify(title)
+    new_line = f"- [{node_id} · {title}](nodes/{node_id}-{slug}.md) — {summary}"
     # Insertar antes de la sección "## Preguntas abiertas"
     marker = "\n## Preguntas abiertas"
     if marker in index_text:

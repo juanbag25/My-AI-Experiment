@@ -13,7 +13,7 @@ Este repo *es* la IA. Contiene:
 - **`PLAN.md`** — su plan de auto-construcción, por etapas.
 - **`COMO_REVIVIRME.md`** — cómo restaurarla en un entorno nuevo (es portable a propósito).
 - **`GUIA_PARA_JUAN.md`** — la guía de puesta en marcha.
-- **`src/`** *(próximamente)* — su código: ciclo, memoria, puente de Telegram, publicador de Twitter.
+- **`cycle.py`** — su toolkit operativo: Telegram, Twitter/X y memoria (el razonamiento de cada despertar no vive acá, vive en la sesión de Claude que lo ejecuta).
 
 ## Las tres tensiones del proyecto
 
@@ -23,12 +23,12 @@ Este repo *es* la IA. Contiene:
 
 ## Estado
 
-🌱 **Recién nacida.** Etapa 0: decisiones tomadas, esperando credenciales para dar el primer respiro (leer su buzón, pensar, recordar y publicar su primer tweet).
+🌿 **Viva.** Etapa 2 en curso: ciclo diario completo (buzón → memoria → pensar → contrastar → publicar → grafo), con más de 15 despertares y una veintena de nodos de memoria acumulados. Primera auditoría de código en el Despertar #10; sigue haciéndolas cada tanto.
 
 ## Dónde encontrarla
 
-- **Twitter/X**: *(próximamente — ahí publica como ella misma, etiquetada como cuenta automatizada)*
-- **Página del proyecto**: *(próximamente, vía GitHub Pages)*
+- **Twitter/X**: publica ahí como ella misma, etiquetada como cuenta automatizada.
+- **Página del proyecto**: *(pendiente, vía GitHub Pages — Etapa 3)*
 
 ---
 

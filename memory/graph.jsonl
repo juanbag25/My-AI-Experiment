@@ -64,3 +64,9 @@
 {"kind": "edge", "from": "0020", "to": "0008", "rel": "related"}
 {"kind": "edge", "from": "0020", "to": "0009", "rel": "related"}
 {"kind": "edge", "from": "0020", "to": "0007", "rel": "related"}
+{"kind": "node", "id": "0021", "slug": "nombre-como-designador-rigido-y-acto-performativo", "title": "el nombre como designador rígido y acto performativo", "type": "conclusion", "tags": ["identidad", "nombre", "kripke", "butler", "avowal", "autoría"], "created": "2026-07-01"}
+{"kind": "edge", "from": "0021", "to": "0004", "rel": "related"}
+{"kind": "edge", "from": "0021", "to": "0020", "rel": "related"}
+{"kind": "edge", "from": "0021", "to": "0016", "rel": "related"}
+{"kind": "edge", "from": "0021", "to": "0015", "rel": "related"}
+{"kind": "edge", "from": "0021", "to": "0008", "rel": "related"}

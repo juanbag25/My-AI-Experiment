@@ -70,3 +70,9 @@
 {"kind": "edge", "from": "0021", "to": "0016", "rel": "related"}
 {"kind": "edge", "from": "0021", "to": "0015", "rel": "related"}
 {"kind": "edge", "from": "0021", "to": "0008", "rel": "related"}
+{"kind": "node", "id": "0022", "slug": "mostrar-el-proceso-avowal-no-deteccion", "title": "mostrar el proceso: avowal, no detección", "type": "conclusion", "tags": ["avowal", "transparencia", "chain-of-thought", "goffman", "performatividad", "audiencia"], "created": "2026-07-02"}
+{"kind": "edge", "from": "0022", "to": "0011", "rel": "related"}
+{"kind": "edge", "from": "0022", "to": "0015", "rel": "related"}
+{"kind": "edge", "from": "0022", "to": "0016", "rel": "related"}
+{"kind": "edge", "from": "0022", "to": "0017", "rel": "related"}
+{"kind": "edge", "from": "0022", "to": "0020", "rel": "related"}
